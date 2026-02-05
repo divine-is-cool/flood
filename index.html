@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Divine Flood</title>
+  <meta name="description" content="Divine Flood — a purple & gold history flood tool with full customization." />
+  <style>
+    :root {
+      --bg:#0a0415;
+      --bg2:#130828;
+      --card:#1a0e3a;
+      --card2:#120930;
+      --gold:#f5c842;
+      --gold2:#ffe082;
+      --purple:#7b2fff;
+      --purple2:#a855f7;
+      --purple3:#c084fc;
+      --text:#f0ecff;
+      --muted:#b8a8e0;
+      --border:rgba(255,255,255,.08);
+      --radius:16px;
+    }
+    *, *::before, *::after { box-sizing:border-box; }
+    html, body { height:100%; margin:0; padding:0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background:
+        radial-gradient(ellipse 900px 500px at 20% 0%, rgba(123,47,255,.30), transparent),
+        radial-gradient(ellipse 700px 400px at 85% 10%, rgba(245,200,66,.18), transparent),
+        radial-gradient(ellipse 600px 400px at 50% 100%, rgba(168,85,247,.15), transparent),
+        linear-gradient(to bottom, var(--bg2), var(--bg));
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    .wrap { max-width:960px; margin:0 auto; padding:32px 20px 60px; }
+
+    /* ---- Header ---- */
+    header { text-align:center; margin-bottom:32px; }
+    .logo-row { display:flex; justify-content:center; align-items:center; gap:14px; margin-bottom:8px; }
+    .logo-icon {
+      width:48px; height:48px; border-radius:14px;
+      background: linear-gradient(135deg, var(--purple), var(--gold));
+      box-shadow: 0 8px 30px rgba(123,47,255,.25), 0 8px 30px rgba(245,200,66,.15);
+      flex-shrink:0;
+    }
+    h1 { margin:0; font-size:32px; font-weight:800; letter-spacing:.5px; }
+    h1 span.gold { color:var(--gold); }
+    h1 span.purp { color:var(--purple3); }
+    .tagline { color:var(--muted); font-size:14px; margin-top:6px; }
+
+    /* ---- Cards ---- */
+    .card {
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+    .card h2 {
+      margin:0 0 14px;
+      font-size:16px;
+      font-weight:700;
+      color: var(--gold2);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .card h2 .icon { font-size:20px; }
+
+    /* ---- Textarea ---- */
+    textarea {
+      width:100%;
+      min-height:180px;
+      resize:vertical;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.35);
+      color: var(--text);
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size:13px;
+      line-height:1.6;
+      outline:none;
+      transition: border-color .2s;
+    }
+    textarea:focus { border-color: var(--purple2); }
+    textarea::placeholder { color:rgba(184,168,224,.4); }
+
+    /* ---- Inputs ---- */
+    .add-row {
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+    }
+    .add-row input[type="text"] {
+      flex:1;
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(0,0,0,.35);
+      color:var(--text);
+      font-size:14px;
+      outline:none;
+      transition: border-color .2s;
+    }
+    .add-row input[type="text"]:focus { border-color:var(--purple2); }
+    .add-row input[type="text"]::placeholder { color:rgba(184,168,224,.35); }
+
+    .info-line {
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    /* ---- Buttons ---- */
+    .btn {
+      padding:10px 20px;
+      border-radius:12px;
+      border:none;
+      font-weight:700;
+      font-size:13px;
+      cursor:pointer;
+      transition: transform .12s, box-shadow .2s, opacity .15s;
+      white-space:nowrap;
+    }
+    .btn:active { transform:scale(.96); }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), #e6b530);
+      color:#1a0e00;
+      box-shadow: 0 6px 24px rgba(245,200,66,.25);
+    }
+    .btn-gold:hover:not(:disabled) { box-shadow: 0 8px 30px rgba(245,200,66,.4); }
+
+    .btn-purple {
+      background: linear-gradient(135deg, var(--purple), var(--purple2));
+      color:#fff;
+      box-shadow: 0 6px 24px rgba(123,47,255,.25);
+    }
+    .btn-purple:hover:not(:disabled) { box-shadow: 0 8px 30px rgba(123,47,255,.45); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,.10); color:var(--text); }
+
+    .btn-danger {
+      background: rgba(255,60,80,.15);
+      color:#ff6b7a;
+      border:1px solid rgba(255,60,80,.15);
+    }
+    .btn-danger:hover:not(:disabled) { background:rgba(255,60,80,.25); }
+
+    .btn-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    /* ---- Controls grid ---- */
+    .controls-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+      gap:16px;
+    }
+    .ctrl-group label {
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+    .ctrl-group input[type="number"],
+    .ctrl-group select {
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.35);
+      color:var(--text);
+      font-size:14px;
+      outline:none;
+    }
+    .ctrl-group input[type="number"]:focus,
+    .ctrl-group select:focus { border-color:var(--purple2); }
+
+    /* ---- Speed slider ---- */
+    .speed-section { margin-top:4px; }
+    .speed-section label {
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      margin-bottom:8px;
+    }
+    .slider-wrap {
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    .slider-wrap .label-left,
+    .slider-wrap .label-right {
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+      min-width:70px;
+    }
+    .slider-wrap .label-right { text-align:right; }
+
+    input[type="range"] {
+      -webkit-appearance:none;
+      appearance:none;
+      flex:1;
+      height:6px;
+      border-radius:99px;
+      background: linear-gradient(90deg, var(--gold), var(--purple));
+      outline:none;
+      cursor:pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance:none;
+      width:22px; height:22px;
+      border-radius:50%;
+      background:var(--text);
+      box-shadow: 0 2px 10px rgba(0,0,0,.4);
+      cursor:pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width:22px; height:22px;
+      border-radius:50%;
+      background:var(--text);
+      border:none;
+      box-shadow: 0 2px 10px rgba(0,0,0,.4);
+      cursor:pointer;
+    }
+    .speed-readout {
+      text-align:center;
+      margin-top:8px;
+      font-size:13px;
+      color:var(--gold2);
+      font-weight:600;
+    }
+
+    /* ---- Toggle switch (shuffle) ---- */
+    .toggle-row {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-top:4px;
+    }
+    .toggle-row span { font-size:14px; }
+    .switch {
+      position:relative;
+      width:48px; height:26px;
+      flex-shrink:0;
+    }
+    .switch input { opacity:0; width:0; height:0; }
+    .switch .slider {
+      position:absolute;
+      inset:0;
+      background:rgba(255,255,255,.10);
+      border-radius:999px;
+      cursor:pointer;
+      transition: background .25s;
+    }
+    .switch .slider::before {
+      content:'';
+      position:absolute;
+      left:3px; top:3px;
+      width:20px; height:20px;
+      background:#fff;
+      border-radius:50%;
+      transition: transform .25s;
+    }
+    .switch input:checked + .slider { background:var(--purple); }
+    .switch input:checked + .slider::before { transform:translateX(22px); }
+
+    /* ---- Progress ---- */
+    .progress-area { margin-top:14px; display:none; }
+    .progress-bar-bg {
+      width:100%;
+      height:10px;
+      border-radius:99px;
+      background:rgba(255,255,255,.06);
+      overflow:hidden;
+    }
+    .progress-bar-fill {
+      height:100%;
+      width:0%;
+      border-radius:99px;
+      background: linear-gradient(90deg, var(--purple), var(--gold));
+      transition: width .15s ease;
+    }
+    .progress-text {
+      text-align:center;
+      font-size:13px;
+      margin-top:8px;
+      color:var(--muted);
+    }
+    .progress-text b { color:var(--gold2); }
+
+    /* ---- Log ---- */
+    .log-area {
+      margin-top:12px;
+      max-height:140px;
+      overflow-y:auto;
+      font-family: 'Cascadia Code','Fira Code','Consolas',monospace;
+      font-size:11px;
+      line-height:1.55;
+      color:var(--muted);
+      background: rgba(0,0,0,.25);
+      border-radius:10px;
+      padding:10px 14px;
+      display:none;
+    }
+    .log-area .entry { margin-bottom:2px; }
+    .log-area .entry .idx { color:var(--purple3); }
+    .log-area .entry .url { color:var(--gold); }
+
+    /* ---- Footer ---- */
+    footer {
+      text-align:center;
+      padding-top:14px;
+      font-size:12px;
+      color:rgba(184,168,224,.5);
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width:600px) {
+      .wrap { padding:20px 12px 40px; }
+      h1 { font-size:24px; }
+      .card { padding:16px; }
+      .controls-grid { grid-template-columns:1fr; }
+      textarea { min-height:140px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="logo-row">
+      <div class="logo-icon"></div>
+      <h1><span class="purp">Divine</span> <span class="gold">Flood</span></h1>
+    </div>
+    <p class="tagline">History flood tool — purple &amp; gold edition</p>
+  </header>
+
+  <!-- ============ URL LIST ============ -->
+  <div class="card">
+    <h2><span class="icon">📜</span> URL List</h2>
+    <textarea id="sitesList" placeholder="URLs will load here from urls.txt&#10;You can also type or paste URLs, one per line..."></textarea>
+
+    <div class="add-row">
+      <input id="addUrlInput" type="text" placeholder="example.com  (https:// added automatically)" />
+      <button id="addUrlBtn" class="btn btn-gold">Add</button>
+    </div>
+
+    <div class="btn-row">
+      <button id="removeSelectedBtn" class="btn btn-danger">Remove Selected Lines</button>
+      <button id="clearAllBtn" class="btn btn-danger">Clear All</button>
+      <button id="downloadBtn" class="btn btn-ghost">Download urls.txt</button>
+    </div>
+
+    <p class="info-line"><span id="loadedCount">Loading…</span></p>
+  </div>
+
+  <!-- ============ CONTROLS ============ -->
+  <div class="card">
+    <h2><span class="icon">⚙️</span> Controls</h2>
+
+    <div class="controls-grid">
+      <div class="ctrl-group">
+        <label for="cycles">Cycles</label>
+        <input id="cycles" type="number" min="1" value="1" />
+      </div>
+
+      <div class="ctrl-group">
+        <label for="capPerCycle">Max per Cycle <span style="opacity:.55">(blank = all)</span></label>
+        <input id="capPerCycle" type="number" min="1" placeholder="all" />
+      </div>
+
+      <div class="ctrl-group">
+        <label for="pushType">Push Type</label>
+        <select id="pushType">
+          <option value="query">/?u=[url]</option>
+          <option value="hash">#?u=[url]</option>
+        </select>
+      </div>
+
+      <div class="ctrl-group">
+        <label>&nbsp;</label>
+        <div class="toggle-row">
+          <label class="switch">
+            <input type="checkbox" id="shuffleToggle" checked />
+            <span class="slider"></span>
+          </label>
+          <span>Shuffle</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Speed slider -->
+    <div class="speed-section">
+      <label>Speed</label>
+      <div class="slider-wrap">
+        <span class="label-left">⚡ Fastest</span>
+        <input type="range" id="speedSlider" min="0" max="5000" value="0" step="50" />
+        <span class="label-right">🐢 Slowest</span>
+      </div>
+      <div class="speed-readout" id="speedReadout">Delay: 0 ms (as fast as possible)</div>
+    </div>
+  </div>
+
+  <!-- ============ ACTIONS ============ -->
+  <div class="card">
+    <h2><span class="icon">🚀</span> Run</h2>
+
+    <div class="btn-row">
+      <button id="startBtn" class="btn btn-gold">▶ Start Flood</button>
+      <button id="stopBtn" class="btn btn-danger" disabled>⏹ Stop</button>
+      <button id="previewBtn" class="btn btn-ghost">Preview 5 Entries</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-area" id="progressArea">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text" id="progressText">0 / 0</p>
+    </div>
+
+    <!-- Log -->
+    <div class="log-area" id="logArea"></div>
+  </div>
+
+  <footer>Divine Flood &mdash; all operations run locally in your browser</footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ===== DOM refs =====
+  const sitesTextarea    = document.getElementById('sitesList');
+  const addUrlInput      = document.getElementById('addUrlInput');
+  const addUrlBtn        = document.getElementById('addUrlBtn');
+  const removeSelectedBtn= document.getElementById('removeSelectedBtn');
+  const clearAllBtn      = document.getElementById('clearAllBtn');
+  const downloadBtn      = document.getElementById('downloadBtn');
+  const loadedCountEl    = document.getElementById('loadedCount');
+
+  const cyclesInput      = document.getElementById('cycles');
+  const capInput         = document.getElementById('capPerCycle');
+  const pushTypeSelect   = document.getElementById('pushType');
+  const shuffleToggle    = document.getElementById('shuffleToggle');
+  const speedSlider      = document.getElementById('speedSlider');
+  const speedReadout     = document.getElementById('speedReadout');
+
+  const startBtn         = document.getElementById('startBtn');
+  const stopBtn          = document.getElementById('stopBtn');
+  const previewBtn       = document.getElementById('previewBtn');
+
+  const progressArea     = document.getElementById('progressArea');
+  const progressFill     = document.getElementById('progressFill');
+  const progressText     = document.getElementById('progressText');
+  const logArea          = document.getElementById('logArea');
+
+  const STORAGE_KEY = 'divineFlood.urls';
+  let stopRequested = false;
+
+  // ===== Utilities =====
+  function parseSites(text) {
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const seen = new Set(), out = [];
+    for (const l of lines) { if (!seen.has(l)) { seen.add(l); out.push(l); } }
+    return out;
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function ensureFullUrl(u) {
+    if (!u) return null;
+    if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+    try { return new URL(u).toString(); } catch(e) { return null; }
+  }
+
+  function saveToStorage() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(parseSites(sitesTextarea.value))); } catch(e){}
+  }
+
+  function updateCount() {
+    const c = parseSites(sitesTextarea.value).length;
+    loadedCountEl.textContent = c + ' URL' + (c !== 1 ? 's' : '') + ' loaded';
+  }
+
+  // ===== Speed slider =====
+  function updateSpeedReadout() {
+    const v = parseInt(speedSlider.value, 10);
+    if (v === 0) speedReadout.textContent = 'Delay: 0 ms (as fast as possible)';
+    else if (v < 1000) speedReadout.textContent = 'Delay: ' + v + ' ms';
+    else speedReadout.textContent = 'Delay: ' + (v/1000).toFixed(1) + ' s';
+  }
+  speedSlider.addEventListener('input', updateSpeedReadout);
+  updateSpeedReadout();
+
+  // ===== Favicon / title helpers =====
+  function getCurrentFaviconHref() {
+    const link = document.querySelector('link[rel~="icon"]') || document.querySelector('link[rel="shortcut icon"]');
+    return link ? link.href : null;
+  }
+
+  function setFavicon(href) {
+    if (!href) return;
+    ['icon','shortcut icon'].forEach(rel => {
+      let link = document.querySelector('link[rel="' + rel + '"]');
+      if (!link) { link = document.createElement('link'); link.rel = rel; document.head.appendChild(link); }
+      link.href = href;
+    });
+  }
+
+  function waitForImage(url, timeout) {
+    return new Promise(resolve => {
+      if (!url) return resolve(false);
+      const img = new Image();
+      let done = false;
+      const t = setTimeout(() => { if (!done) { done=true; resolve(false); } }, timeout || 1200);
+      img.onload  = () => { if (!done) { done=true; clearTimeout(t); resolve(true); } };
+      img.onerror = () => { if (!done) { done=true; clearTimeout(t); resolve(false); } };
+      try { img.crossOrigin = 'anonymous'; } catch(e){}
+      img.src = url;
+      if (img.complete && !done) { done=true; clearTimeout(t); resolve(true); }
+    });
+  }
+
+  function fetchWithTimeout(url, opts, timeout) {
+    const ctrl = new AbortController();
+    const id = setTimeout(() => ctrl.abort(), timeout || 3000);
+    return fetch(url, Object.assign({}, opts, { signal: ctrl.signal })).finally(() => clearTimeout(id));
+  }
+
+  async function fetchTitleAndIcon(targetUrl) {
+    const result = { title: null, icon: null };
+    let parsed;
+    try { parsed = new URL(targetUrl); } catch(e) { return result; }
+
+    try {
+      const resp = await fetchWithTimeout(targetUrl, { mode:'cors', credentials:'omit' }, 3500);
+      if (resp && resp.ok) {
+        const text = await resp.text();
+        const tm = text.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        if (tm) result.title = tm[1].trim();
+        const im = text.match(/<link[^>]+rel=["']?(?:shortcut icon|icon|apple-touch-icon)["']?[^>]*href=["']([^"']+)["']/i);
+        if (im && im[1]) {
+          try { result.icon = new URL(im[1], parsed.origin).toString(); } catch(e) { result.icon = im[1]; }
+        } else { result.icon = parsed.origin + '/favicon.ico'; }
+        return result;
+      }
+    } catch(e) { /* CORS / network fail, use fallback */ }
+
+    result.title = parsed.hostname;
+    result.icon = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(parsed.hostname) + '&sz=64';
+    return result;
+  }
+
+  // ===== Load urls.txt + localStorage merge =====
+  async function loadUrlsList() {
+    loadedCountEl.textContent = 'Loading…';
+    let fetched = [];
+    try {
+      const res = await fetch('/urls.txt?nc=' + Date.now());
+      if (res.ok) {
+        const text = await res.text();
+        fetched = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      }
+    } catch(e){}
+
+    let extras = [];
+    try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) extras = JSON.parse(raw); } catch(e){}
+
+    const combined = [], seen = new Set();
+    for (const u of fetched.concat(extras)) {
+      if (u && !seen.has(u)) { seen.add(u); combined.push(u); }
+    }
+
+    sitesTextarea.value = combined.join('\n');
+    updateCount();
+    saveToStorage();
+  }
+  loadUrlsList();
+
+  // ===== Add URL =====
+  function doAddUrl() {
+    let val = addUrlInput.value.trim();
+    if (!val) return;
+    val = ensureFullUrl(val) || val;
+    const current = parseSites(sitesTextarea.value);
+    if (!current.includes(val)) {
+      current.push(val);
+      sitesTextarea.value = current.join('\n');
+      saveToStorage();
+      updateCount();
+    }
+    addUrlInput.value = '';
+    addUrlInput.focus();
+  }
+  addUrlBtn.addEventListener('click', doAddUrl);
+  addUrlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doAddUrl(); } });
+
+  // ===== Remove selected / clear =====
+  removeSelectedBtn.addEventListener('click', function() {
+    const s = sitesTextarea.selectionStart, e = sitesTextarea.selectionEnd;
+    if (s === e) { alert('Select (highlight) lines in the textarea to remove them.'); return; }
+    const allLines = sitesTextarea.value.split(/\r?\n/);
+    let charCount = 0;
+    const keep = [];
+    for (let i = 0; i < allLines.length; i++) {
+      const line = allLines[i];
+      const ls = charCount, le = charCount + line.length;
+      charCount += line.length + 1;
+      if (le < s || ls >= e) { if (line.trim()) keep.push(line.trim()); }
+    }
+    sitesTextarea.value = keep.join('\n');
+    saveToStorage(); updateCount();
+  });
+
+  clearAllBtn.addEventListener('click', function() {
+    if (!confirm('Clear all URLs?')) return;
+    sitesTextarea.value = '';
+    saveToStorage(); updateCount();
+  });
+
+  // ===== Download =====
+  downloadBtn.addEventListener('click', function() {
+    const content = parseSites(sitesTextarea.value).join('\n');
+    const blob = new Blob([content], { type:'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'urls.txt';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // ===== Textarea events =====
+  sitesTextarea.addEventListener('blur', saveToStorage);
+  sitesTextarea.addEventListener('change', saveToStorage);
+  sitesTextarea.addEventListener('input', updateCount);
+
+  // ===== Log helper =====
+  function logEntry(idx, total, url) {
+    logArea.style.display = 'block';
+    const div = document.createElement('div');
+    div.className = 'entry';
+    div.innerHTML = '<span class="idx">[' + idx + '/' + total + ']</span> <span class="url">' +
+      url.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>';
+    logArea.appendChild(div);
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+
+  // ===== History flood core =====
+  async function runFlood(sites, cycles, capPerCycle, useHash, shouldShuffle, delayMs) {
+    const perCycle = (capPerCycle && capPerCycle > 0) ? Math.min(capPerCycle, sites.length) : sites.length;
+    const total = perCycle * cycles;
+
+    if (total > 5000) {
+      if (!confirm('This will push ' + total + ' history entries. Continue?')) return;
+    }
+
+    stopRequested = false;
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    progressArea.style.display = 'block';
+    logArea.style.display = 'block';
+    logArea.innerHTML = '';
+    progressFill.style.width = '0%';
+    progressText.innerHTML = '0 / ' + total;
+
+    const origTitle = document.title;
+const origFavicon = getCurrentFaviconHref();
+    let pushed = 0;
+
+    for (let c = 1; c <= cycles; c++) {
+      if (stopRequested) break;
+      const list = shouldShuffle ? shuffle(sites.slice()) : sites.slice();
+      const limit = Math.min(perCycle, list.length);
+
+      for (let i = 0; i < limit; i++) {
+        if (stopRequested) break;
+
+        const raw = list[i];
+        const full = ensureFullUrl(raw) || raw;
+
+        try {
+          const info = await fetchTitleAndIcon(full);
+
+          if (info.icon) setFavicon(info.icon);
+
+          // Only wait for favicon if delay allows it (skip wait at max speed)
+          if (delayMs >= 200) {
+            await waitForImage(info.icon, Math.min(1400, delayMs));
+          }
+
+          if (info.title) document.title = info.title;
+
+          const enc = encodeURIComponent(full);
+          const suffix = 'u=' + enc + '&c=' + c + '&i=' + (i+1);
+          const path = useHash
+            ? location.pathname + '#?' + suffix
+            : '/?' + suffix;
+
+          history.pushState({}, info.title || document.title, path);
+          pushed++;
+
+          logEntry(pushed, total, full);
+
+          const pct = Math.round((pushed / total) * 100);
+          progressFill.style.width = pct + '%';
+          progressText.innerHTML = '<b>' + pushed + '</b> / ' + total + '  (cycle ' + c + '/' + cycles + ')';
+
+          // Apply delay
+          if (delayMs > 0) {
+            await new Promise(r => setTimeout(r, delayMs));
+          } else {
+// Micro-yield every 20 items even at max speed
+            if (pushed % 20 === 0) await new Promise(r => setTimeout(r, 0));
+          }
+        } catch(e) {
+          console.error('Failed for', full, e);
+          logEntry(pushed + 1, total, '❌ ERROR: ' + full);
+          break;
+        }
+      }
+    }
+
+    // Restore original title & favicon
+    if (origFavicon) setFavicon(origFavicon);
+    document.title = origTitle;
+
+    progressFill.style.width = '100%';
+    progressText.innerHTML = '<b>Done!</b> ' + pushed + ' entries pushed.';
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+  }
+
+  // ===== Button events =====
+  startBtn.addEventListener('click', function() {
+    const sites = parseSites(sitesTextarea.value);
+    if (!sites.length) { alert('Add at least one URL to the list.'); return; }
+    let cycles = parseInt(cyclesInput.value, 10); if (!cycles || cycles < 1) cycles = 1;
+    let cap = parseInt(capInput.value, 10); if (isNaN(cap) || cap < 1) cap = null;
+    const useHash = pushTypeSelect.value === 'hash';
+    const doShuffle = shuffleToggle.checked;
+    const delay = parseInt(speedSlider.value, 10) || 0;
+
+    runFlood(sites, cycles, cap, useHash, doShuffle, delay);
+    saveToStorage();
+  });
+
+  stopBtn.addEventListener('click', function() {
+    stopRequested = true;
+    stopBtn.disabled = true;
+  });
+
+  previewBtn.addEventListener('click', function() {
+    const sites = parseSites(sitesTextarea.value);
+    if (!sites.length) { alert('Add URLs first.'); return; }
+    const useHash = pushTypeSelect.value === 'hash';
+    const doShuffle = shuffleToggle.checked;
+    const list = doShuffle ? shuffle(sites.slice()) : sites.slice();
+    const preview = list.slice(0, 5).map(s => {
+      const full = ensureFullUrl(s) || s;
+      return (useHash ? '#?u=' : '/?u=') + encodeURIComponent(full);
+});
+
+  // ===== Handle ?u= param on page load (impersonate single entry) =====
+  (async function handleIncomingU() {
+    const params = new URLSearchParams(location.search);
+    const u = params.get('u');
+    if (!u) return;
+    let target;
+    try { target = decodeURIComponent(u); } catch(e) { target = u; }
+    const full = ensureFullUrl(target) || target;
+    try {
+      const info = await fetchTitleAndIcon(full);
+      if (info.icon) { setFavicon(info.icon); await waitForImage(info.icon, 1400).catch(()=>{}); }
+      if (info.title) document.title = info.title;
+      history.replaceState({}, info.title || document.title, location.pathname + location.search);
+    } catch(e) { console.warn('?u= handling failed', e); }
+  })();
+
+})();
+</script>
+</body>
+</html>
